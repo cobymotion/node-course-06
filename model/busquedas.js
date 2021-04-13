@@ -1,22 +1,17 @@
 
 const axios = require('axios');
-const { getToken } = require('../helpers/mytoken');
 
 class Busquedas {
 
     historial=[];
-    token = ''; 
 
     constructor(){        
     }
 
-    async loadToken(){
-        this.token = await getToken(); 
-    }
-
+    
     get paramsMapbox(){
         return {
-            'access_token':this.token,
+            'access_token':process.env.MAPBOX_KEY,
             'limit':5,
             'language':'es'
         };
@@ -24,13 +19,20 @@ class Busquedas {
     
 
     async ciudad(lugar ='') {
+        
         try{
             const axiosObj = axios.create({
                 baseURL: `https://api.mapbox.com/geocoding/v5/mapbox.places/${lugar}.json`,
                 params:this.paramsMapbox
             });
             const resp = await axiosObj.get(); 
-            console.log(resp.data);
+            console.log(resp.data.features);            
+            return resp.data.features.map( lugar => ({
+                id:lugar.id,
+                nombre: lugar.place_name,
+                lng: lugar.center[0],
+                lat: lugar.center[1]
+            })); 
 
         }catch(error){
             return [];  // Retornar ciudades 
