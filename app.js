@@ -1,6 +1,7 @@
 require('dotenv').config();
 
-const { leerInput, inquirerMenu, inquirerPause } = require('./helpers/inquirer');
+const { leerInput, inquirerMenu, inquirerPause, listarLugares } = require('./helpers/inquirer');
+const { mostrarDatos } = require('./helpers/mensajes');
 const Busquedas = require('./model/busquedas');
 
 const main = async() => {
@@ -14,9 +15,15 @@ const main = async() => {
         opt = opcion;    
         switch(opt){
             case 1: 
-                const lugar = await leerInput('Proporciona el lugar'); 
-                const dataLugares = await busqueda.ciudad(lugar);
-                console.log(dataLugares);
+                const filtro = await leerInput('Proporciona el lugar'); 
+                const dataLugares = await busqueda.ciudad(filtro);
+                const id = await listarLugares(dataLugares);   
+                if(id!=='0'){             
+                    const lugarSelected = dataLugares.find( lugar => lugar.id ==id);                 
+                    const weather = await busqueda.getWeatherByPlace(lugarSelected.lat, lugarSelected.lng);                
+                    mostrarDatos(lugarSelected, weather);
+                } else                 
+                    console.log('Se cancelo la operación'.red);                
 
             break; 
             case 2:
