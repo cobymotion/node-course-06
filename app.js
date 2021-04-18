@@ -19,15 +19,18 @@ const main = async() => {
                 const dataLugares = await busqueda.ciudad(filtro);
                 const id = await listarLugares(dataLugares);   
                 if(id!=='0'){             
-                    const lugarSelected = dataLugares.find( lugar => lugar.id ==id);                 
+                    const lugarSelected = dataLugares.find( lugar => lugar.id ==id);
+                    busqueda.agregarHistorial(lugarSelected.nombre);                 
                     const weather = await busqueda.getWeatherByPlace(lugarSelected.lat, lugarSelected.lng);                
                     mostrarDatos(lugarSelected, weather);
                 } else                 
                     console.log('Se cancelo la operación'.red);                
-
             break; 
             case 2:
-                console.log('Opcion 2');
+                busqueda.historialCapitalizado.forEach((lugar, index)=>{
+                    const idx = `${index + 1}`.blue; 
+                    console.log(`${idx} ${lugar}`);
+                });
             break;            
         }        
 
